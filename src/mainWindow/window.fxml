@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.scene.shape.Box?>
+<?import javafx.scene.layout.HBox?>
+<BorderPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mainWindow.Controller">
+    <center>
+        <VBox alignment="CENTER">
+            <HBox alignment="CENTER">
+                <GridPane fx:id="game_gridPane" />
+            </HBox>
+
+         <BorderPane.margin>
+            <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
+         </BorderPane.margin>
+        </VBox>
+    </center>
+    <right>
+        <VBox alignment="CENTER" minWidth="200." spacing="5" BorderPane.alignment="CENTER">
+            <Button prefHeight="25.0" prefWidth="196.0" text="Start">
+            <VBox.margin>
+               <Insets bottom="5.0" top="5.0" />
+            </VBox.margin></Button>
+
+            <Label text="Geschwindigkeit (Züge pro Sekunde)">
+            <VBox.margin>
+               <Insets />
+            </VBox.margin></Label>
+
+            <Slider majorTickUnit="10.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" value="2.0">
+            </Slider>
+
+            <Button prefHeight="25.0" prefWidth="197.0" text="Reset">
+            <VBox.margin>
+               <Insets top="50.0" />
+            </VBox.margin></Button>
+         <BorderPane.margin>
+            <Insets left="5.0" right="5.0" />
+         </BorderPane.margin>
+        </VBox>
+    </right>
+</BorderPane>
