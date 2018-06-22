@@ -18,9 +18,23 @@ public class Game {
 
         board.setup();
         for (Color color : Color.values()){
-            Player temp = new Player(color);
+            Player temp = new Player(color, this);
             temp.setup(board.getStartFields(color));
             allPlayer.add(temp);
         }
+    }
+
+    public void nextPlayerMove(){
+        getAllPlayer().get(0).performMove(dice.rollDice(), board);
+
+        //todo at 6 again
+    }
+
+    public List<Player> getAllPlayer() {
+        return allPlayer;
+    }
+
+    public Dice getDice() {
+        return dice;
     }
 }

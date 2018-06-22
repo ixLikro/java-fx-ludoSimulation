@@ -5,10 +5,10 @@ import javafx.scene.paint.Paint;
 
 public enum Color {
 
-    GREEN(javafx.scene.paint.Color.GREEN),
-    RED(javafx.scene.paint.Color.RED),
-    BLUE(javafx.scene.paint.Color.BLUE),
-    YELLOW(javafx.scene.paint.Color.YELLOW);
+    GREEN(javafx.scene.paint.Color.GREEN.darker()),
+    RED(javafx.scene.paint.Color.RED.darker()),
+    BLUE(javafx.scene.paint.Color.BLUE.darker()),
+    YELLOW(javafx.scene.paint.Color.YELLOW.darker());
 
     private Paint paint;
 

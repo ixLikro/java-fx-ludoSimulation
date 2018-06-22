@@ -14,14 +14,14 @@ public class Board {
 
     public static final int FIELD_COUNT = 40;
 
-    private final List<Field> allFields;
+    private final List<Field> allNormalFields;
     private final Map<Color, List<FinnishField>> allFinnishFields;
     private final Map<Color, List<StartField>> allStartFields;
     private final Map<Color, Field> allNormalSpawnFields;
     private final Map<Color, Field> allLastNormalFields;
 
     public Board() {
-        allFields = new ArrayList<>();
+        allNormalFields = new ArrayList<>();
         allFinnishFields = new HashMap<>();
         allStartFields = new HashMap<>();
         allNormalSpawnFields = new HashMap<>();
@@ -29,9 +29,9 @@ public class Board {
     }
 
     public void setup(){
-        allFields.clear();
+        allNormalFields.clear();
         for(int i = 0; i < 40; i++){
-            allFields.add(new Field(i));
+            allNormalFields.add(new Field(i));
         }
 
         allStartFields.clear();
@@ -51,16 +51,25 @@ public class Board {
         }
 
         allNormalSpawnFields.clear();
-        allNormalSpawnFields.put(Color.GREEN, allFields.get(0));
-        allNormalSpawnFields.put(Color.RED, allFields.get(10));
-        allNormalSpawnFields.put(Color.BLUE, allFields.get(20));
-        allNormalSpawnFields.put(Color.YELLOW, allFields.get(30));
+        allNormalSpawnFields.put(Color.GREEN, allNormalFields.get(0));
+        allNormalSpawnFields.put(Color.RED, allNormalFields.get(10));
+        allNormalSpawnFields.put(Color.BLUE, allNormalFields.get(20));
+        allNormalSpawnFields.put(Color.YELLOW, allNormalFields.get(30));
 
         for(Map.Entry<Color, Field> entry : allNormalSpawnFields.entrySet()){
-            allLastNormalFields.put(entry.getKey(),allFields.get((entry.getValue().getIndex() + 39) % FIELD_COUNT));
+            allLastNormalFields.put(entry.getKey(), allNormalFields.get((entry.getValue().getIndex() + 39) % FIELD_COUNT));
         }
     }
 
+    /**
+     * this method calculates the new field for one figure.
+     * it ignores other figures, but it follows the game rules
+     *
+     * @param oldField the old field
+     * @param color the color(it's needed bc the start/finnish fields are diffrent for every color)
+     * @param diceRoll the erg from the dice roll
+     * @return the new field
+     */
     public Field calculateNewField(Field oldField, Color color, int diceRoll){
 
         //can the player go to an normal field
@@ -73,12 +82,46 @@ public class Board {
         }
 
         //check if the new field is a finnish field
-        if(oldField.getIndex() + diceRoll > allLastNormalFields.get(color).getIndex()){
+        if(oldField.getIndex() + diceRoll > allLastNormalFields.get(color).getIndex() && !(oldField instanceof FinnishField)){
+            //calculate the finnish index, -1 bc the finnish fields start with 0
+            int index = (oldField.getIndex() + diceRoll) - allLastNormalFields.get(color).getIndex() -1;
 
+            if(index > (Controller.FIGURE_COUNT-1)){
+                return oldField;
+            }
+            return allFinnishFields.get(color).get(index);
         }
 
+        //check the finnish area
+        if(oldField instanceof FinnishField){
+            if(oldField.getIndex() + diceRoll >= Controller.FIGURE_COUNT){
+                return oldField;
+            }else {
+                return allFinnishFields.get(color).get(oldField.getIndex() + diceRoll);
+            }
+        }
 
+        //if we are still here we return the normal field
+        return allNormalFields.get((oldField.getIndex() + diceRoll) % FIELD_COUNT);
+    }
 
+    /**
+     * @param figure the figue
+     * @param color the color of the player
+     * @return the diff to the last normal field, if(unvalid) return -1
+     */
+    public int calculateDiffToLastField(Figure figure, Color color){
+        if(figure.getIsOn() instanceof StartField || figure.getIsOn() instanceof FinnishField){
+            return -1;
+        }
+
+        int count = 0;
+        Field pivo = figure.getIsOn();
+        while (!pivo.equals(getNormalSpawnField(color))){
+            count++;
+            pivo = allNormalFields.get(count % 40);
+        }
+        return count;
     }
 
     public List<StartField> getStartFields(Color color){
@@ -87,5 +130,13 @@ public class Board {
 
     public List<FinnishField> getFinnishFields(Color color){
         return allFinnishFields.get(color);
+    }
+
+    public Field getNormalSpawnField(Color color){
+        return allNormalSpawnFields.get(color);
+    }
+
+    public Field getLastNormalField(Color color){
+        return allLastNormalFields.get(color);
     }
 }

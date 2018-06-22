@@ -24,7 +24,7 @@
     </center>
     <right>
         <VBox alignment="CENTER" minWidth="200." spacing="5" BorderPane.alignment="CENTER">
-            <Button prefHeight="25.0" prefWidth="196.0" text="Start">
+            <Button fx:id="right_button_start" prefHeight="25.0" prefWidth="196.0" text="Start">
             <VBox.margin>
                <Insets bottom="5.0" top="5.0" />
             </VBox.margin></Button>
@@ -37,7 +37,8 @@
             <Slider majorTickUnit="10.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" value="2.0">
             </Slider>
 
-            <Button prefHeight="25.0" prefWidth="197.0" text="Reset">
+
+            <Button fx:id="right_button_reset" prefHeight="25.0" prefWidth="197.0" text="Reset">
             <VBox.margin>
                <Insets top="50.0" />
             </VBox.margin></Button>

@@ -2,10 +2,18 @@ package mainWindow.view;
 
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
+import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
 import mainWindow.Controller;
+import mainWindow.model.Figure;
+import mainWindow.model.Game;
+import mainWindow.model.Player;
+import mainWindow.model.field.FinnishField;
+import mainWindow.model.field.StartField;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,10 +22,15 @@ import java.util.Map;
 
 public class BoardView extends View {
 
+    private final Paint NORMAL_DEFAULT_PAINT = Color.GRAY.brighter().brighter();
+    private final Paint SPECIAL_DEFAULT_PAINT = Color.WHITE;
+
+
     private List<Circle> allFieldShapes;
 
     private Map<mainWindow.model.Color, List<Circle>> allFinnishShapes;
     private Map<mainWindow.model.Color, List<Circle>> allStartShapes;
+    private Map<mainWindow.model.Color, Label> allDiceLabels;
 
     public BoardView(Controller controller) {
         super(controller);
@@ -25,6 +38,7 @@ public class BoardView extends View {
         allFieldShapes = new ArrayList<>();
         allFinnishShapes = new HashMap<>();
         allStartShapes = new HashMap<>();
+        allDiceLabels = new HashMap<>();
     }
 
 
@@ -61,20 +75,48 @@ public class BoardView extends View {
                 controller.game_gridPane.add(temp, pos[0], pos[1]);
                 GridPane.setHalignment(temp, HPos.CENTER);
                 GridPane.setValignment(temp, VPos.CENTER);
-                allFinnishShapes.get(color).add(temp);
+                allStartShapes.get(color).add(temp);
             }
+        }
+
+        allDiceLabels.clear();
+        for(mainWindow.model.Color color : mainWindow.model.Color.values()){
+            Label temp = createNewDiceLabel(color);
+            int[] pos = colorToDiceCell(color);
+            controller.game_gridPane.add(temp, pos[0], pos[1]);
+            GridPane.setHalignment(temp, HPos.CENTER);
+            GridPane.setValignment(temp, VPos.CENTER);
+            allDiceLabels.put(color, temp);
         }
     }
 
     @Override
-    public void updateUI() {
+    public void updateUI(Game game) {
+        resetUI();
+        game.getAllPlayer().forEach(player -> {
+
+            allDiceLabels.get(player.getColor()).setText(player.getLastDiceRoll()+"");
+
+            player.getAllFigures().forEach(figure -> {
+                if (figure.getIsOn() instanceof FinnishField) {
+                    allFinnishShapes.get(player.getColor()).get(figure.getIsOn().getIndex()).setFill(player.getColor().getPaint());
+                } else if (figure.getIsOn() instanceof StartField) {
+                    allStartShapes.get(player.getColor()).get(figure.getIsOn().getIndex()).setFill(player.getColor().getPaint());
+                } else {
+                    allFieldShapes.get(figure.getIsOn().getIndex()).setFill(player.getColor().getPaint());
+                }
+            });
+        });
+
 
     }
 
 
     @Override
     public void resetUI() {
-
+        allFieldShapes.forEach(circle -> circle.setFill(Color.GRAY));
+        allStartShapes.forEach((color, circles) -> circles.forEach(circle -> circle.setFill(SPECIAL_DEFAULT_PAINT)));
+        allFinnishShapes.forEach((color, circles) -> circles.forEach(circle -> circle.setFill(SPECIAL_DEFAULT_PAINT)));
     }
 
     private int[] fieldIndexToCell(int fieldIndex){
@@ -198,10 +240,34 @@ public class BoardView extends View {
         return ret;
     }
 
+    private int[] colorToDiceCell(mainWindow.model.Color color){
+        int[] ret = new int[2];
+
+        switch (color){
+            case GREEN:
+                ret[0] = 7;
+                ret[1] = 0;
+                break;
+            case RED:
+                ret[0] = 10;
+                ret[1] = 7;
+                break;
+            case BLUE:
+                ret[0] = 3;
+                ret[1] = 10;
+                break;
+            case YELLOW:
+                ret[0] = 0;
+                ret[1] = 3;
+                break;
+        }
+        return ret;
+    }
+
     private Circle createCircle(){
         Circle ret = new Circle();
         ret.setRadius(30);
-        ret.setFill(Color.GRAY);
+        ret.setFill(NORMAL_DEFAULT_PAINT);
         ret.setStroke(Color.BLACK);
         ret.setStrokeWidth(3d);
 
@@ -215,6 +281,14 @@ public class BoardView extends View {
         ret.setStroke(color.getPaint());
         ret.setStrokeWidth(3d);
 
+        return ret;
+    }
+
+    private Label createNewDiceLabel(mainWindow.model.Color color){
+        Label ret = new Label();
+        ret.setText("0");
+        ret.setTextFill(color.getPaint());
+        ret.setFont(new Font(ret.getFont().getFamily(), 30));
         return ret;
     }
 

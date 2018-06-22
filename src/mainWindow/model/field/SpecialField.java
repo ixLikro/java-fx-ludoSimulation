@@ -2,6 +2,8 @@ package mainWindow.model.field;
 
 import mainWindow.model.Color;
 
+import java.util.Objects;
+
 public class SpecialField extends Field {
 
     private Color color;
@@ -14,4 +16,7 @@ public class SpecialField extends Field {
     public Color getColor() {
         return color;
     }
+
+
+
 }

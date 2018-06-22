@@ -29,4 +29,11 @@ public class Figure {
         return Objects.equals(getIsOn(), figure.getIsOn());
     }
 
+
+    @Override
+    public String toString() {
+        return "Figure{" +
+                "isOn=" + isOn +
+                '}';
+    }
 }
