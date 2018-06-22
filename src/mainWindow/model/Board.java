@@ -12,14 +12,20 @@ import java.util.Map;
 
 public class Board {
 
-    private List<Field> allFields;
-    private Map<Color, List<FinnishField>> allFinnishFields;
-    private Map<Color, List<StartField>> allStartFields;
+    public static final int FIELD_COUNT = 40;
+
+    private final List<Field> allFields;
+    private final Map<Color, List<FinnishField>> allFinnishFields;
+    private final Map<Color, List<StartField>> allStartFields;
+    private final Map<Color, Field> allNormalSpawnFields;
+    private final Map<Color, Field> allLastNormalFields;
 
     public Board() {
         allFields = new ArrayList<>();
         allFinnishFields = new HashMap<>();
         allStartFields = new HashMap<>();
+        allNormalSpawnFields = new HashMap<>();
+        allLastNormalFields = new HashMap<>();
     }
 
     public void setup(){
@@ -43,6 +49,36 @@ public class Board {
                 allFinnishFields.get(color).add(new FinnishField(i, color));
             }
         }
+
+        allNormalSpawnFields.clear();
+        allNormalSpawnFields.put(Color.GREEN, allFields.get(0));
+        allNormalSpawnFields.put(Color.RED, allFields.get(10));
+        allNormalSpawnFields.put(Color.BLUE, allFields.get(20));
+        allNormalSpawnFields.put(Color.YELLOW, allFields.get(30));
+
+        for(Map.Entry<Color, Field> entry : allNormalSpawnFields.entrySet()){
+            allLastNormalFields.put(entry.getKey(),allFields.get((entry.getValue().getIndex() + 39) % FIELD_COUNT));
+        }
+    }
+
+    public Field calculateNewField(Field oldField, Color color, int diceRoll){
+
+        //can the player go to an normal field
+        if(oldField instanceof StartField){
+            if(diceRoll != 6){
+                return oldField;
+            }else {
+                return allNormalSpawnFields.get(color);
+            }
+        }
+
+        //check if the new field is a finnish field
+        if(oldField.getIndex() + diceRoll > allLastNormalFields.get(color).getIndex()){
+
+        }
+
+
+
     }
 
     public List<StartField> getStartFields(Color color){

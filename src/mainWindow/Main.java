@@ -19,7 +19,7 @@ public class Main extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("window.fxml"));
         try {
             root = fxmlLoader.load();
-            primaryStage.setScene(new Scene(root, 1150, 700));
+            primaryStage.setScene(new Scene(root, 1150, 750));
             controller = fxmlLoader.getController();
         } catch (IOException e) {
             e.printStackTrace();
@@ -27,7 +27,6 @@ public class Main extends Application {
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(400);
         primaryStage.setTitle("Mensch ärgere dich nicht!");
-
 
         if (controller != null) {
             controller.setupUI(primaryStage);
