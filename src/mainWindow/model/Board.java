@@ -124,6 +124,20 @@ public class Board {
         return count;
     }
 
+    /**
+     * @param player the player
+     * @return a free startField from a specific color, or null if all start fields a occupied
+     */
+    public Field getFreeStartField(Player player){
+        for (StartField field : allStartFields.get(player.getColor())) {
+            if (player.isOnField(field) == null) {
+                return field;
+            }
+        }
+
+        return null;
+    }
+
     public List<StartField> getStartFields(Color color){
         return allStartFields.get(color);
     }

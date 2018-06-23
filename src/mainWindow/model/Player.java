@@ -52,9 +52,42 @@ public class Player {
         return null;
     }
 
-    public void performMove(int diceRoll, Board board){
+    public void performOneStep(int diceRoll, Board board){
         lastDiceRoll = diceRoll;
         moveAlgorithm.accept(diceRoll, board);
+    }
+
+    public int isCleanedUp(Board board){
+
+        int figureCountOnNormal = 0, figureCountOnFinnish = 0, figureCountOnStart = 0;
+        for (Figure figure : allFigures) {
+            if (figure.getIsOn() instanceof FinnishField){
+                figureCountOnFinnish++;
+                continue;
+            }
+
+            if(figure.getIsOn() instanceof StartField){
+                figureCountOnStart++;
+                continue;
+            }
+
+            figureCountOnNormal++;
+        }
+
+        //if at least one figure on a normal field -> return false
+        if(figureCountOnNormal != 0){
+            return -1;
+        }
+
+        //go back from the last finnish field to the first. if the is a gap then return false
+        for(int i = 0; i < figureCountOnFinnish; i++){
+            FinnishField field = board.getFinnishFields(color).get(Controller.FIGURE_COUNT - i -1); //-1 bc the finnish fields are index based
+            if(isOnField(field) != null){
+                return -1;
+            }
+        }
+
+        return figureCountOnFinnish;
     }
 
     public List<Figure> getAllFigures() {
@@ -75,6 +108,26 @@ public class Player {
                 "allFigures=" + allFigures +
                 ", color=" + color +
                 '}';
+    }
+
+    /**
+     * this method perform the actual move and bump a enemy
+     * @param figure the figure that should move
+     * @param newField the new field
+     * @param bumpPlayer a player that stand on the new Field, or null
+     * @param board the board
+     */
+    private void setNewField(Figure figure, Field newField, Player bumpPlayer, Board board){
+        if(bumpPlayer != null){
+            //get the actual figure to bump
+            Figure toBump = bumpPlayer.isOnField(newField);
+
+            //bump the figure
+            toBump.setIsOn(board.getFreeStartField(bumpPlayer));
+        }
+
+        //now set our figure
+        figure.setIsOn(newField);
     }
 
     //****************************Algorithms
@@ -172,6 +225,7 @@ public class Player {
 
 
 
+
         //sort the rating
         List<Map.Entry<Figure, Integer>> sort = figureQualityRating.entrySet()
                 .stream()
@@ -187,7 +241,7 @@ public class Player {
                 if(entry.getValue() != 0){
                     if(entry.getValue() > 0){
                         //finally perform move
-                        entry.getKey().setIsOn(newField);
+                        setNewField(entry.getKey(), newField, bumpThisPlayer, board);
                         return;
                     }
                 }else {
@@ -202,10 +256,12 @@ public class Player {
                     .sorted((o1, o2) -> Integer.compare(board.calculateDiffToLastField(o2.getKey(), color)
                             , board.calculateDiffToLastField(o1.getKey(), color)))
                     .collect(Collectors.toList()).get(0);
-
-            entry.getKey().setIsOn(board.calculateNewField(entry.getKey().getIsOn(), color, diceRoll));
+            //finally perform move
+            setNewField(entry.getKey(), board.calculateNewField(entry.getKey().getIsOn(), color, diceRoll), bumpThisPlayer, board);
         }
     }
+
+
 
 
 }
