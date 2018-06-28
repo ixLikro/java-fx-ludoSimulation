@@ -90,6 +90,13 @@ class BoardTest {
             assertEquals(3, testFieldType(board.getAllNormalFields().get(board.getLastNormalField(player.getColor())
                     .getIndex()-1), player.getColor(), 5, FieldType.finish).getIndex());
         });
+
+        //test move up in the finish
+        game.getAllPlayer().forEach(player -> {
+            assertEquals(3, testFieldType(board.getFinishFields(player.getColor()).get(3), player.getColor(),1, FieldType.finish).getIndex());
+            assertEquals(3, testFieldType(board.getFinishFields(player.getColor()).get(1), player.getColor(),2, FieldType.finish).getIndex());
+            assertEquals(0, testFieldType(board.getFinishFields(player.getColor()).get(0), player.getColor(),4, FieldType.finish).getIndex());
+        });
     }
 
     @Test
