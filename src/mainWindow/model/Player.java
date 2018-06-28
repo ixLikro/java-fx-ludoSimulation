@@ -82,7 +82,7 @@ public class Player {
         //go back from the last finnish field to the first. if the is a gap then return false
         for(int i = 0; i < figureCountOnFinnish; i++){
             FinishField field = board.getFinishFields(color).get(Controller.FIGURE_COUNT - i -1); //-1 bc the finnish fields are index based
-            if(isOnField(field) != null){
+            if(isOnField(field) == null){
                 return -1;
             }
         }
