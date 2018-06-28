@@ -155,11 +155,24 @@ public class Player {
 
         for (Figure figure : allFigures){
             Field newField = board.calculateNewField(figure.getIsOn(), color, diceRoll);
+            //check if we can bump an enemy pawn
+            if(!(newField instanceof FinishField) && !(newField instanceof StartField)) {
+                for (Player player : game.getAllPlayer()) {
+                    if (player.getColor() == color) {
+                        continue;
+                    }
+
+                    if (player.isOnField(newField) != null) {
+                        bumpThisPlayer.put(figure, player);
+                    }
+                }
+            }
+
 
             //add to rating
             figureQualityRating.put(figure, 0);
 
-            //check if the figure stand on the normal spwan field (1st prio)
+            //check if the figure stand on the normal spawn field (1st prio)
             if(figure.getIsOn().equals(board.getNormalSpawnField(color))){
                 figureQualityRating.replace(figure, 10000);
                 continue;
@@ -174,20 +187,9 @@ public class Player {
             }
 
             //check if we can bump an enemy pawn (3rd prio)
-            if(!(newField instanceof FinishField) && !(newField instanceof StartField)) {
-                for (Player player : game.getAllPlayer()) {
-                    if (player.getColor() == color) {
-                        continue;
-                    }
-
-                    if (player.isOnField(newField) != null) {
-                        bumpThisPlayer.put(figure, player);
-                    }
-                }
-                if (bumpThisPlayer.get(figure) != null) {
-                    figureQualityRating.replace(figure, 1000);
-                    continue;
-                }
+            if(bumpThisPlayer.get(figure) != null){
+                figureQualityRating.replace(figure, 1000);
+                continue;
             }
 
             //check if this figure can go in the finnish area (4th prio)
