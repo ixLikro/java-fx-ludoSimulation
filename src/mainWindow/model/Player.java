@@ -6,13 +6,13 @@ import mainWindow.model.field.FinishField;
 import mainWindow.model.field.StartField;
 
 import java.util.*;
-import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 public class Player {
 
     //Settings
-    private BiConsumer<Integer, Board> moveAlgorithm = this::forceBump;
+    private BiFunction<Integer, Board, Boolean> moveAlgorithm = this::forceBump;
 
     private List<Figure> allFigures;
     private Color color;
@@ -52,9 +52,24 @@ public class Player {
         return null;
     }
 
-    public void performOneStep(int diceRoll, Board board){
+    public boolean performOneStep(int diceRoll, Board board){
         lastDiceRoll = diceRoll;
-        moveAlgorithm.accept(diceRoll, board);
+        return moveAlgorithm.apply(diceRoll, board);
+    }
+
+    /**
+     * @param board the board
+     * @return true if no figure in in the house(start fields)
+     */
+    public boolean isHouseFree(Board board){
+
+        for(StartField startField : board.getStartFields(color)){
+            if(isOnField(startField) != null){
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public int isCleanedUp(Board board){
@@ -117,7 +132,12 @@ public class Player {
      * @param bumpPlayer a player that stand on the new Field, or null
      * @param board the board
      */
-    private void setNewField(Figure figure, Field newField, Player bumpPlayer, Board board){
+    private boolean setNewField(Figure figure, Field newField, Player bumpPlayer, Board board){
+
+        if(figure.getIsOn().equals(newField)){
+            return false;
+        }
+
         if(bumpPlayer != null){
             //get the actual figure to bump
             Figure toBump = bumpPlayer.isOnField(newField);
@@ -130,6 +150,8 @@ public class Player {
 
         //now set our figure
         figure.setIsOn(newField);
+
+        return true;
     }
 
     //****************************Algorithms
@@ -147,7 +169,7 @@ public class Player {
      * @param diceRoll the diceRoll
      * @param board the actual board
      */
-    private void forceBump(Integer diceRoll, Board board){
+    private boolean forceBump(Integer diceRoll, Board board){
 
         Map<Figure, Integer> figureQualityRating = new HashMap<>();
         Map<Figure, Player> bumpThisPlayer = new HashMap<>();
@@ -173,7 +195,7 @@ public class Player {
             figureQualityRating.put(figure, 0);
 
             //check if the figure stand on the normal spawn field (1st prio)
-            if(figure.getIsOn().equals(board.getNormalSpawnField(color))){
+            if(figure.getIsOn().equals(board.getNormalSpawnField(color)) && !isHouseFree(board)){
                 figureQualityRating.replace(figure, 10000);
                 continue;
             }
@@ -245,8 +267,7 @@ public class Player {
                 if(entry.getValue() != 0){
                     if(entry.getValue() > 0){
                         //finally perform prio move
-                        setNewField(entry.getKey(), newField, bumpThisPlayer.get(entry.getKey()), board);
-                        return;
+                        return setNewField(entry.getKey(), newField, bumpThisPlayer.get(entry.getKey()), board);
                     }
                 }else {
                     canGoWithoutPrio.add(entry);
@@ -260,11 +281,10 @@ public class Player {
                     .sorted(Comparator.comparingInt(o -> board.calculateDiffToLastField(o.getKey().getIsOn(), color)))
                     .collect(Collectors.toList()).get(0);
             //finally perform move
-            setNewField(entry.getKey(), board.calculateNewField(entry.getKey().getIsOn(), color, diceRoll), bumpThisPlayer.get(entry.getKey()), board);
+            return setNewField(entry.getKey(), board.calculateNewField(entry.getKey().getIsOn(), color, diceRoll), bumpThisPlayer.get(entry.getKey()), board);
         }
+
+
+        return false;
     }
-
-
-
-
 }

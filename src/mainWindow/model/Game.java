@@ -34,7 +34,6 @@ public class Game {
         int tryCount = 1;
 
         System.out.println("");
-        System.out.println("");
 
         if(allPlayerFinished()){
             System.out.println("Alle Spieler sind fertig -> Nothing to do O_O");
