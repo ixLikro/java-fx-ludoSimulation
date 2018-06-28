@@ -2,7 +2,7 @@ package mainWindow.model;
 
 import mainWindow.Controller;
 import mainWindow.model.field.Field;
-import mainWindow.model.field.FinnishField;
+import mainWindow.model.field.FinishField;
 import mainWindow.model.field.StartField;
 
 import java.util.*;
@@ -61,7 +61,7 @@ public class Player {
 
         int figureCountOnNormal = 0, figureCountOnFinnish = 0, figureCountOnStart = 0;
         for (Figure figure : allFigures) {
-            if (figure.getIsOn() instanceof FinnishField){
+            if (figure.getIsOn() instanceof FinishField){
                 figureCountOnFinnish++;
                 continue;
             }
@@ -74,14 +74,14 @@ public class Player {
             figureCountOnNormal++;
         }
 
-        //if at least one figure on a normal field -> return false
+        //if at least one figure on a normal field -> return false (-1)
         if(figureCountOnNormal != 0){
             return -1;
         }
 
         //go back from the last finnish field to the first. if the is a gap then return false
         for(int i = 0; i < figureCountOnFinnish; i++){
-            FinnishField field = board.getFinnishFields(color).get(Controller.FIGURE_COUNT - i -1); //-1 bc the finnish fields are index based
+            FinishField field = board.getFinishFields(color).get(Controller.FIGURE_COUNT - i -1); //-1 bc the finnish fields are index based
             if(isOnField(field) != null){
                 return -1;
             }
@@ -124,6 +124,8 @@ public class Player {
 
             //bump the figure
             toBump.setIsOn(board.getFreeStartField(bumpPlayer));
+
+            System.out.println("Spieler "+color.name()+" hat eine Firgur von "+bumpPlayer.getColor().name()+" rausgeworfen!");
         }
 
         //now set our figure
@@ -148,7 +150,7 @@ public class Player {
     private void forceBump(Integer diceRoll, Board board){
 
         Map<Figure, Integer> figureQualityRating = new HashMap<>();
-        Player bumpThisPlayer = null;
+        Map<Figure, Player> bumpThisPlayer = new HashMap<>();
 
 
         for (Figure figure : allFigures){
@@ -172,27 +174,27 @@ public class Player {
             }
 
             //check if we can bump an enemy pawn (3rd prio)
-            if(!(newField instanceof FinnishField) && !(newField instanceof StartField)) {
+            if(!(newField instanceof FinishField) && !(newField instanceof StartField)) {
                 for (Player player : game.getAllPlayer()) {
                     if (player.getColor() == color) {
                         continue;
                     }
 
                     if (player.isOnField(newField) != null) {
-                        bumpThisPlayer = player;
+                        bumpThisPlayer.put(figure, player);
                     }
                 }
-                if (bumpThisPlayer != null) {
+                if (bumpThisPlayer.get(figure) != null) {
                     figureQualityRating.replace(figure, 1000);
                     continue;
                 }
             }
 
             //check if this figure can go in the finnish area (4th prio)
-            if(newField instanceof FinnishField && !(figure.getIsOn() instanceof FinnishField)){
+            if(newField instanceof FinishField && !(figure.getIsOn() instanceof FinishField)){
                 boolean valid = true;
                 for (int i = 0; i < newField.getIndex(); i++){
-                    if(isOnField(board.getFinnishFields(color).get(i)) != null){
+                    if(isOnField(board.getFinishFields(color).get(i)) != null){
                         valid = false;
                     }
                 }
@@ -205,11 +207,11 @@ public class Player {
             }
 
             //check if this figure can move up in the finnish area (5th prio)
-            if(newField instanceof FinnishField && figure.getIsOn() instanceof FinnishField && !newField.equals(figure.getIsOn())){
+            if(newField instanceof FinishField && figure.getIsOn() instanceof FinishField && !newField.equals(figure.getIsOn())){
 
                 boolean valid = true;
                 for (int i = figure.getIsOn().getIndex()+1; i < newField.getIndex(); i++){
-                    if(isOnField(board.getFinnishFields(color).get(i)) != null){
+                    if(isOnField(board.getFinishFields(color).get(i)) != null){
                         valid = false;
                     }
                 }
@@ -240,8 +242,8 @@ public class Player {
             if (isOnField(newField) == null){
                 if(entry.getValue() != 0){
                     if(entry.getValue() > 0){
-                        //finally perform move
-                        setNewField(entry.getKey(), newField, bumpThisPlayer, board);
+                        //finally perform prio move
+                        setNewField(entry.getKey(), newField, bumpThisPlayer.get(entry.getKey()), board);
                         return;
                     }
                 }else {
@@ -253,11 +255,10 @@ public class Player {
         if(canGoWithoutPrio.size() > 0) {
             //set the figur that is nearest on the last normal field
             Map.Entry<Figure, Integer> entry = canGoWithoutPrio.stream()
-                    .sorted((o1, o2) -> Integer.compare(board.calculateDiffToLastField(o2.getKey(), color)
-                            , board.calculateDiffToLastField(o1.getKey(), color)))
+                    .sorted(Comparator.comparingInt(o -> board.calculateDiffToLastField(o.getKey().getIsOn(), color)))
                     .collect(Collectors.toList()).get(0);
             //finally perform move
-            setNewField(entry.getKey(), board.calculateNewField(entry.getKey().getIsOn(), color, diceRoll), bumpThisPlayer, board);
+            setNewField(entry.getKey(), board.calculateNewField(entry.getKey().getIsOn(), color, diceRoll), bumpThisPlayer.get(entry.getKey()), board);
         }
     }
 

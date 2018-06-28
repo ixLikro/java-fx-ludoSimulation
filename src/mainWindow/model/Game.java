@@ -33,6 +33,9 @@ public class Game {
     public void nextPlayerMove(){
         int tryCount = 1;
 
+        System.out.println("");
+        System.out.println("");
+
         if(allPlayerFinished()){
             System.out.println("Alle Spieler sind fertig -> Nothing to do O_O");
             return;
@@ -47,8 +50,8 @@ public class Game {
 
         //perform one step
         int diceRoll = dice.rollDice();
-        getCurrentPlayer().performOneStep(diceRoll, board);
         System.out.println("Spieler "+getCurrentPlayer().getColor().name()+" hat eine "+diceRoll+" gewürfelt.");
+        getCurrentPlayer().performOneStep(diceRoll, board);
 
         while (diceRoll != 6 && getCurrentPlayer().isCleanedUp(board) != -1 && tryCount < 3){
             tryCount++;
@@ -94,5 +97,9 @@ public class Game {
 
     public Dice getDice() {
         return dice;
+    }
+
+    public Board getBoard() {
+        return board;
     }
 }

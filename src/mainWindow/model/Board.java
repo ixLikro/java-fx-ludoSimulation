@@ -2,7 +2,7 @@ package mainWindow.model;
 
 import mainWindow.Controller;
 import mainWindow.model.field.Field;
-import mainWindow.model.field.FinnishField;
+import mainWindow.model.field.FinishField;
 import mainWindow.model.field.StartField;
 
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ public class Board {
     public static final int FIELD_COUNT = 40;
 
     private final List<Field> allNormalFields;
-    private final Map<Color, List<FinnishField>> allFinnishFields;
+    private final Map<Color, List<FinishField>> allFinnishFields;
     private final Map<Color, List<StartField>> allStartFields;
     private final Map<Color, Field> allNormalSpawnFields;
     private final Map<Color, Field> allLastNormalFields;
@@ -46,7 +46,7 @@ public class Board {
         for(Color color : Color.values()){
             allFinnishFields.put(color, new ArrayList<>());
             for (int i = 0; i < Controller.FIGURE_COUNT; i++) {
-                allFinnishFields.get(color).add(new FinnishField(i, color));
+                allFinnishFields.get(color).add(new FinishField(i, color));
             }
         }
 
@@ -82,9 +82,10 @@ public class Board {
         }
 
         //check if the new field is a finnish field
-        if(oldField.getIndex() + diceRoll > allLastNormalFields.get(color).getIndex() && !(oldField instanceof FinnishField)){
+        int diffToLastField = calculateDiffToLastField(oldField, color);
+        if(diffToLastField < diceRoll && diffToLastField != -1 && !(oldField instanceof FinishField)){
             //calculate the finnish index, -1 bc the finnish fields start with 0
-            int index = (oldField.getIndex() + diceRoll) - allLastNormalFields.get(color).getIndex() -1;
+            int index = diceRoll -diffToLastField -1;
 
             if(index > (Controller.FIGURE_COUNT-1)){
                 return oldField;
@@ -93,7 +94,7 @@ public class Board {
         }
 
         //check the finnish area
-        if(oldField instanceof FinnishField){
+        if(oldField instanceof FinishField){
             if(oldField.getIndex() + diceRoll >= Controller.FIGURE_COUNT){
                 return oldField;
             }else {
@@ -106,20 +107,22 @@ public class Board {
     }
 
     /**
-     * @param figure the figue
+     * @param field the field the figure stand on
      * @param color the color of the player
      * @return the diff to the last normal field, if(unvalid) return -1
      */
-    public int calculateDiffToLastField(Figure figure, Color color){
-        if(figure.getIsOn() instanceof StartField || figure.getIsOn() instanceof FinnishField){
+    public int calculateDiffToLastField(Field field, Color color){
+        if(field instanceof StartField || field instanceof FinishField){
             return -1;
         }
 
         int count = 0;
-        Field pivo = figure.getIsOn();
-        while (!pivo.equals(getNormalSpawnField(color))){
+        Field pivo = field;
+        while (!pivo.equals(getLastNormalField(color))){
             count++;
-            pivo = allNormalFields.get(count % 40);
+            pivo = allNormalFields.get((field.getIndex() + count) % 40);
+
+            if(count > 80) return -1;
         }
         return count;
     }
@@ -142,7 +145,7 @@ public class Board {
         return allStartFields.get(color);
     }
 
-    public List<FinnishField> getFinnishFields(Color color){
+    public List<FinishField> getFinishFields(Color color){
         return allFinnishFields.get(color);
     }
 
@@ -152,5 +155,9 @@ public class Board {
 
     public Field getLastNormalField(Color color){
         return allLastNormalFields.get(color);
+    }
+
+    public List<Field> getAllNormalFields() {
+        return allNormalFields;
     }
 }

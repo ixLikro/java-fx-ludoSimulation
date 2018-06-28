@@ -9,10 +9,8 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import mainWindow.Controller;
-import mainWindow.model.Figure;
 import mainWindow.model.Game;
-import mainWindow.model.Player;
-import mainWindow.model.field.FinnishField;
+import mainWindow.model.field.FinishField;
 import mainWindow.model.field.StartField;
 
 import java.util.ArrayList;
@@ -98,7 +96,7 @@ public class BoardView extends View {
             allDiceLabels.get(player.getColor()).setText(player.getLastDiceRoll()+"");
 
             player.getAllFigures().forEach(figure -> {
-                if (figure.getIsOn() instanceof FinnishField) {
+                if (figure.getIsOn() instanceof FinishField) {
                     allFinnishShapes.get(player.getColor()).get(figure.getIsOn().getIndex()).setFill(player.getColor().getPaint());
                 } else if (figure.getIsOn() instanceof StartField) {
                     allStartShapes.get(player.getColor()).get(figure.getIsOn().getIndex()).setFill(player.getColor().getPaint());

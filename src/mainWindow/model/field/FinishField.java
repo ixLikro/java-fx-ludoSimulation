@@ -2,14 +2,11 @@ package mainWindow.model.field;
 
 import mainWindow.model.Color;
 
-public class StartField extends SpecialField {
+public class FinishField extends SpecialField {
 
-    public StartField(int index, Color color) {
+    public FinishField(int index, Color color) {
         super(index, color);
-
     }
 
 
-
 }
-
