@@ -1,6 +1,7 @@
 package mainWindow.model;
 
 import mainWindow.Controller;
+import mainWindow.statistic.StatisticHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,15 +48,28 @@ public class Game {
             return;
         }
 
+        //increment the turn count
+        StatisticHelper.getInstance().getPlayerStatistic(getCurrentPlayer().getColor()).getTurnCount().increment();
+
         //perform one step
         int diceRoll = dice.rollDice();
         System.out.println("Spieler "+getCurrentPlayer().getColor().name()+" hat eine "+diceRoll+" gewürfelt.");
+        //increment the dice roll count
+        StatisticHelper.getInstance().getPlayerStatistic(getCurrentPlayer().getColor()).getDiceRollCount().increment();
+
         boolean hasMoved = getCurrentPlayer().performOneStep(diceRoll, board);
+
+        if(!hasMoved){
+            //increment the could not move counter
+            StatisticHelper.getInstance().getPlayerStatistic(getCurrentPlayer().getColor()).getCountNotMove().increment();
+        }
 
         while (diceRoll != 6 && getCurrentPlayer().isCleanedUp(board) != -1 && tryCount < 3 && !hasMoved){
             tryCount++;
             diceRoll = dice.rollDice();
             System.out.println("Spieler "+getCurrentPlayer().getColor().name()+" hat eine "+diceRoll+" gewürfelt.");
+            //increment the dice roll count
+            StatisticHelper.getInstance().getPlayerStatistic(getCurrentPlayer().getColor()).getDiceRollCount().increment();
             getCurrentPlayer().performOneStep(diceRoll, board);
             System.out.println("Spieler "+getCurrentPlayer().getColor().name()+" durfte nochmal, da er kein Spieler draußen hat und aufgeräumt hat."+ " - Dies war sein "+ (tryCount) +". Versuch.");
 
@@ -64,6 +78,8 @@ public class Game {
         while (diceRoll == 6){
             diceRoll = dice.rollDice();
             System.out.println("Spieler "+getCurrentPlayer().getColor().name()+" hat eine "+diceRoll+" gewürfelt.");
+            //increment the dice roll count
+            StatisticHelper.getInstance().getPlayerStatistic(getCurrentPlayer().getColor()).getDiceRollCount().increment();
             getCurrentPlayer().performOneStep(diceRoll, board);
             System.out.println("Spieler "+getCurrentPlayer().getColor().name()+" durfte nochmal, da er eine 6 gewürfelt hat.");
         }

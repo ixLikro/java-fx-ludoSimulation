@@ -4,6 +4,7 @@ import mainWindow.Controller;
 import mainWindow.model.field.Field;
 import mainWindow.model.field.FinishField;
 import mainWindow.model.field.StartField;
+import mainWindow.statistic.StatisticHelper;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -146,6 +147,11 @@ public class Player {
             toBump.setIsOn(board.getFreeStartField(bumpPlayer));
 
             System.out.println("Spieler "+color.name()+" hat eine Firgur von "+bumpPlayer.getColor().name()+" rausgeworfen!");
+
+            //increment the was bumped
+            StatisticHelper.getInstance().getPlayerStatistic(bumpPlayer.getColor()).getWasBumped().increment();
+            //incement the has bumped counter
+            StatisticHelper.getInstance().getPlayerStatistic(color).getHasBumped().increment();
         }
 
         //now set our figure

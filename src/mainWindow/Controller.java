@@ -5,6 +5,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import mainWindow.model.Game;
+import mainWindow.statistic.StatisticHelper;
 import mainWindow.view.BoardView;
 import mainWindow.view.View;
 
@@ -30,6 +31,8 @@ public class Controller {
         allViews.add(new BoardView(this));
 
         game = new Game();
+
+        StatisticHelper.getInstance().init(game);
     }
 
     public void setupUI(Stage stage){
@@ -62,6 +65,8 @@ public class Controller {
         }
 
         game = new Game();
+
+        StatisticHelper.getInstance().reset(game);
     }
 
     //gui elements
