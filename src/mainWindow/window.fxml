@@ -6,10 +6,9 @@
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<?import javafx.scene.shape.Box?>
-<?import javafx.scene.layout.HBox?>
 <BorderPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mainWindow.Controller">
     <center>
         <VBox alignment="CENTER">
@@ -29,12 +28,12 @@
                <Insets bottom="5.0" top="5.0" />
             </VBox.margin></Button>
 
-            <Label text="Geschwindigkeit (Züge pro Sekunde)">
+            <Label fx:id="right_slider_label" text="Geschwindigkeit (Züge pro Sekunde)">
             <VBox.margin>
                <Insets />
             </VBox.margin></Label>
 
-            <Slider majorTickUnit="10.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" value="2.0">
+            <Slider fx:id="right_slider" blockIncrement="5.0" majorTickUnit="10.0" max="70.0" min="1" minorTickCount="1" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="10.0">
             </Slider>
 
 

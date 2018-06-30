@@ -28,8 +28,10 @@ public class Main extends Application {
         primaryStage.setMinHeight(400);
         primaryStage.setTitle("Mensch ärgere dich nicht!");
 
+        primaryStage.setOnCloseRequest(event -> controller.shutDown());
+
         if (controller != null) {
-            controller.setupUI(primaryStage);
+            controller.setup(primaryStage);
         } else {
             System.err.println("Loading main window gone horribly wrong -_-\nplease restart the Application");
         }

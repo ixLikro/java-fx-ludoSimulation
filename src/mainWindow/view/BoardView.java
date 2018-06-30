@@ -3,15 +3,18 @@ package mainWindow.view;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
+import javafx.util.Duration;
 import mainWindow.Controller;
 import mainWindow.model.Game;
 import mainWindow.model.field.FinishField;
 import mainWindow.model.field.StartField;
+import mainWindow.statistic.StatisticHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +23,7 @@ import java.util.Map;
 
 public class BoardView extends View {
 
-    private final Paint NORMAL_DEFAULT_PAINT = Color.GRAY.brighter().brighter();
+    private final Paint NORMAL_DEFAULT_PAINT = Color.GRAY.brighter();
     private final Paint SPECIAL_DEFAULT_PAINT = Color.WHITE;
 
 
@@ -45,7 +48,7 @@ public class BoardView extends View {
 
         allFieldShapes.clear();
         for (int i = 0; i < 40; i++){
-            Circle temp = createCircle();
+            Circle temp = createCircle(i);
             int[] pos = fieldIndexToCell(i);
             controller.game_gridPane.add(temp, pos[0], pos[1]);
             allFieldShapes.add(temp);
@@ -112,7 +115,7 @@ public class BoardView extends View {
 
     @Override
     public void resetUI() {
-        allFieldShapes.forEach(circle -> circle.setFill(Color.GRAY));
+        allFieldShapes.forEach(circle -> circle.setFill(NORMAL_DEFAULT_PAINT));
         allStartShapes.forEach((color, circles) -> circles.forEach(circle -> circle.setFill(SPECIAL_DEFAULT_PAINT)));
         allFinnishShapes.forEach((color, circles) -> circles.forEach(circle -> circle.setFill(SPECIAL_DEFAULT_PAINT)));
     }
@@ -262,12 +265,21 @@ public class BoardView extends View {
         return ret;
     }
 
-    private Circle createCircle(){
+    private Circle createCircle(int index){
         Circle ret = new Circle();
         ret.setRadius(30);
         ret.setFill(NORMAL_DEFAULT_PAINT);
         ret.setStroke(Color.BLACK);
         ret.setStrokeWidth(3d);
+
+        ret.setOnMouseEntered(event -> {
+            Tooltip tip = new Tooltip(StatisticHelper.getInstance().getCurrentGameStat()
+                    .getFieldStatistic(index).toString());
+            tip.setShowDelay(Duration.millis(50));
+            tip.setShowDuration(Duration.INDEFINITE);
+            tip.setFont(new Font(tip.getFont().getFamily(),14));
+            Tooltip.install(ret, tip);
+        });
 
         return ret;
     }
@@ -278,6 +290,15 @@ public class BoardView extends View {
         ret.setFill(Color.WHITE);
         ret.setStroke(color.getPaint());
         ret.setStrokeWidth(3d);
+
+        ret.setOnMouseEntered(event -> {
+            Tooltip tip = new Tooltip(StatisticHelper.getInstance().getCurrentGameStat()
+                    .getPlayerStatistic(color).toString());
+            tip.setShowDelay(Duration.millis(50));
+            tip.setShowDuration(Duration.INDEFINITE);
+            tip.setFont(new Font(tip.getFont().getFamily(),14));
+            Tooltip.install(ret, tip);
+        });
 
         return ret;
     }

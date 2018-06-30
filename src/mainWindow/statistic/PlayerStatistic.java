@@ -1,18 +1,23 @@
 package mainWindow.statistic;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class PlayerStatistic {
 
-    StatisticItemInt turnCount, diceRollCount, countNotMove, wasBumped, hasBumped;
+    private StatisticItemInt turnCount, wasBumped, hasBumped;
+    private SupplierStatistic diceRollCount;
+    private Map<Integer, Integer> allDiceRolls;
 
     public PlayerStatistic() {
+        allDiceRolls = new HashMap<>();
+        for(int i = 1; i < 7; i++){
+            allDiceRolls.put(i,0);
+        }
+
         turnCount = new StatisticItemInt("Anzahl Züge: ");
-        diceRollCount = new StatisticItemInt("Anzahl würfeln: ");
-        countNotMove = new StatisticItemInt("durfte keine Figur weiter setzen: ");
-        wasBumped = new StatisticItemInt("wurde rausgeworfen: ");
-        hasBumped = new StatisticItemInt("hat rausgeworfen: ");
+        diceRollCount = new SupplierStatistic("Anzahl würfeln: ", this::calculateDiceRollCount);
+        wasBumped = new StatisticItemInt("Wurde rausgeworfen: ");
+        hasBumped = new StatisticItemInt("Hat rausgeworfen: ");
     }
 
     private List<StatisticItem> getValuesAsList(){
@@ -31,19 +36,40 @@ public class PlayerStatistic {
 
         for (int i = 0; i < valuesAsList.size(); i++) {
             ret.append(valuesAsList.get(i).toString());
-            if(i != valuesAsList.size()-1){
-                ret.append("\n");
-            }
+            ret.append("\n");
+        }
+
+        ret.append("\nWürfel Ergebnisse:\n");
+
+        for (Map.Entry<Integer, Integer> entry : allDiceRolls.entrySet()) {
+            ret.append("Die ")
+                    .append(entry.getKey())
+                    .append(" wurde ")
+                    .append(entry.getValue())
+                    .append(" mal gewürfelt")
+                    .append("\n");
         }
 
         return ret.toString();
+    }
+
+    public void incrementDiceRoll(int diceRoll){
+        allDiceRolls.put(diceRoll, allDiceRolls.get(diceRoll)+1);
+    }
+
+    private int calculateDiceRollCount(){
+        int ret = 0;
+        for(int diceRoll : allDiceRolls.values()){
+            ret += diceRoll;
+        }
+        return ret;
     }
 
     public StatisticItemInt getTurnCount() {
         return turnCount;
     }
 
-    public StatisticItemInt getDiceRollCount() {
+    public SupplierStatistic getDiceRollCount() {
         return diceRollCount;
     }
 
@@ -55,7 +81,4 @@ public class PlayerStatistic {
         return hasBumped;
     }
 
-    public StatisticItemInt getCountNotMove() {
-        return countNotMove;
-    }
 }

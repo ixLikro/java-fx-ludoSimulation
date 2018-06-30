@@ -31,45 +31,38 @@ public class Game {
         lastPlayerIndex = -1;
     }
 
-    public void nextPlayerMove(){
+    public boolean nextPlayerMove(){
         int tryCount = 1;
 
         System.out.println("");
 
         if(allPlayerFinished()){
             System.out.println("Alle Spieler sind fertig -> Nothing to do O_O");
-            return;
+            return true;
         }
 
         if(getNextPlayer().isCleanedUp(board) == Controller.FIGURE_COUNT){
             //skip
             System.out.println("Spieler "+getCurrentPlayer().getColor().name()+" ist bereits fertig -> Überspringen");
             nextPlayerMove();
-            return;
+            return false;
         }
 
         //increment the turn count
-        StatisticHelper.getInstance().getPlayerStatistic(getCurrentPlayer().getColor()).getTurnCount().increment();
+        StatisticHelper.getInstance().getCurrentGameStat().getPlayerStatistic(getCurrentPlayer()
+                .getColor()).getTurnCount().increment();
 
         //perform one step
         int diceRoll = dice.rollDice();
         System.out.println("Spieler "+getCurrentPlayer().getColor().name()+" hat eine "+diceRoll+" gewürfelt.");
-        //increment the dice roll count
-        StatisticHelper.getInstance().getPlayerStatistic(getCurrentPlayer().getColor()).getDiceRollCount().increment();
 
         boolean hasMoved = getCurrentPlayer().performOneStep(diceRoll, board);
 
-        if(!hasMoved){
-            //increment the could not move counter
-            StatisticHelper.getInstance().getPlayerStatistic(getCurrentPlayer().getColor()).getCountNotMove().increment();
-        }
 
         while (diceRoll != 6 && getCurrentPlayer().isCleanedUp(board) != -1 && tryCount < 3 && !hasMoved){
             tryCount++;
             diceRoll = dice.rollDice();
             System.out.println("Spieler "+getCurrentPlayer().getColor().name()+" hat eine "+diceRoll+" gewürfelt.");
-            //increment the dice roll count
-            StatisticHelper.getInstance().getPlayerStatistic(getCurrentPlayer().getColor()).getDiceRollCount().increment();
             getCurrentPlayer().performOneStep(diceRoll, board);
             System.out.println("Spieler "+getCurrentPlayer().getColor().name()+" durfte nochmal, da er kein Spieler draußen hat und aufgeräumt hat."+ " - Dies war sein "+ (tryCount) +". Versuch.");
 
@@ -78,8 +71,6 @@ public class Game {
         while (diceRoll == 6){
             diceRoll = dice.rollDice();
             System.out.println("Spieler "+getCurrentPlayer().getColor().name()+" hat eine "+diceRoll+" gewürfelt.");
-            //increment the dice roll count
-            StatisticHelper.getInstance().getPlayerStatistic(getCurrentPlayer().getColor()).getDiceRollCount().increment();
             getCurrentPlayer().performOneStep(diceRoll, board);
             System.out.println("Spieler "+getCurrentPlayer().getColor().name()+" durfte nochmal, da er eine 6 gewürfelt hat.");
         }
@@ -88,6 +79,7 @@ public class Game {
         if(getCurrentPlayer().isCleanedUp(board) == Controller.FIGURE_COUNT){
             System.out.println("Spieler "+getCurrentPlayer().getColor().name()+" ist in diesem Zug fertig geworden!");
         }
+        return false;
     }
 
     private boolean allPlayerFinished(){

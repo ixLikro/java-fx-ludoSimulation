@@ -55,6 +55,11 @@ public class Player {
 
     public boolean performOneStep(int diceRoll, Board board){
         lastDiceRoll = diceRoll;
+
+        //increment the dice roll count
+        StatisticHelper.getInstance().getCurrentGameStat()
+                .getPlayerStatistic(color).incrementDiceRoll(diceRoll);
+
         return moveAlgorithm.apply(diceRoll, board);
     }
 
@@ -149,14 +154,24 @@ public class Player {
             System.out.println("Spieler "+color.name()+" hat eine Firgur von "+bumpPlayer.getColor().name()+" rausgeworfen!");
 
             //increment the was bumped
-            StatisticHelper.getInstance().getPlayerStatistic(bumpPlayer.getColor()).getWasBumped().increment();
-            //incement the has bumped counter
-            StatisticHelper.getInstance().getPlayerStatistic(color).getHasBumped().increment();
+            StatisticHelper.getInstance().getCurrentGameStat()
+                    .getPlayerStatistic(bumpPlayer.getColor()).getWasBumped().increment();
+            //inclement the has bumped counter
+            StatisticHelper.getInstance().getCurrentGameStat()
+                    .getPlayerStatistic(color).getHasBumped().increment();
+        }
+
+
+        if(!figure.getIsOn().equals(newField)){
+            //increment the field count
+            if(!(newField instanceof StartField) && !(newField instanceof FinishField)){
+                StatisticHelper.getInstance().getCurrentGameStat()
+                        .getFieldStatistic(newField.getIndex()).increment(color);
+            }
         }
 
         //now set our figure
         figure.setIsOn(newField);
-
         return true;
     }
 
