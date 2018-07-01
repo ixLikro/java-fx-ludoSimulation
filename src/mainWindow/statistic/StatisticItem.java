@@ -10,5 +10,7 @@ public abstract class StatisticItem {
 
     public abstract String getValue();
 
+    public abstract int getValueAsInteger();
+
 
 }

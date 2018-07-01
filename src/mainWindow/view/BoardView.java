@@ -273,8 +273,8 @@ public class BoardView extends View {
         ret.setStrokeWidth(3d);
 
         ret.setOnMouseEntered(event -> {
-            Tooltip tip = new Tooltip(StatisticHelper.getInstance().getCurrentGameStat()
-                    .getFieldStatistic(index).toString());
+            Tooltip tip = new Tooltip(StatisticHelper.getInstance().getSumStatistic()
+                    .getFieldStatistic(index).toString(true));
             tip.setShowDelay(Duration.millis(50));
             tip.setShowDuration(Duration.INDEFINITE);
             tip.setFont(new Font(tip.getFont().getFamily(),14));
@@ -292,8 +292,8 @@ public class BoardView extends View {
         ret.setStrokeWidth(3d);
 
         ret.setOnMouseEntered(event -> {
-            Tooltip tip = new Tooltip(StatisticHelper.getInstance().getCurrentGameStat()
-                    .getPlayerStatistic(color).toString());
+            Tooltip tip = new Tooltip(StatisticHelper.getInstance().getSumStatistic()
+                    .getPlayerStatistic(color).toString(true));
             tip.setShowDelay(Duration.millis(50));
             tip.setShowDuration(Duration.INDEFINITE);
             tip.setFont(new Font(tip.getFont().getFamily(),14));

@@ -23,7 +23,6 @@ public class Timer extends Thread {
 
         sliderListener = (observable, oldValue, newValue) -> {
             wait.set(calcWait(newValue.intValue()));
-            System.out.println("slider: " + newValue.intValue() + ", wait: " + calcWait(newValue.intValue()));
         };
 
         wait.set(calcWait(slider.getValue()));
@@ -35,8 +34,13 @@ public class Timer extends Thread {
     public void run() {
 
         while (!Thread.interrupted()) {
-            synchronized (worker) {
-                worker.notify();
+
+            if(worker.isAlive()) {
+                synchronized (worker) {
+                    worker.notify();
+                }
+            }else {
+                return;
             }
             try {
                 Thread.sleep(wait.get());

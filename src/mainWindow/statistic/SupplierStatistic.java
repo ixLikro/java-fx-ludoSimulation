@@ -15,6 +15,7 @@ public class SupplierStatistic extends StatisticItem {
      * try to return the value as integer. If the supplier dont return an int this method will return -1
      * @return -1 or the int that is given by the supplier
      */
+    @Override
     public int getValueAsInteger(){
         if(supplier.get() instanceof Integer){
             return (Integer) supplier.get();

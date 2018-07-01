@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.CheckBox?>
 <BorderPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mainWindow.Controller">
     <center>
         <VBox alignment="CENTER">
@@ -28,12 +29,17 @@
                <Insets bottom="5.0" top="5.0" />
             </VBox.margin></Button>
 
+            <CheckBox fx:id="right_checkbox_autoRestart"  text="Automatisch neues Spiel Starten">
+                <VBox.margin>
+                    <Insets bottom="5.0" top="5.0" />
+                </VBox.margin></CheckBox>
+
             <Label fx:id="right_slider_label" text="Geschwindigkeit (Züge pro Sekunde)">
             <VBox.margin>
                <Insets />
             </VBox.margin></Label>
 
-            <Slider fx:id="right_slider" blockIncrement="5.0" majorTickUnit="10.0" max="70.0" min="1" minorTickCount="1" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="10.0">
+            <Slider fx:id="right_slider" blockIncrement="5.0" majorTickUnit="10.0" max="100.0" min="1" minorTickCount="1" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="10.0">
             </Slider>
 
 

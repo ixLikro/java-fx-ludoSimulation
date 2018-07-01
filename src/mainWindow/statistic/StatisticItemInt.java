@@ -21,7 +21,8 @@ public class StatisticItemInt extends StatisticItem {
         this.value = value;
     }
 
-    public int getValueAsInt(){
+    @Override
+    public int getValueAsInteger(){
         return value;
     }
 
@@ -29,6 +30,7 @@ public class StatisticItemInt extends StatisticItem {
     public String getValue() {
         return value+"";
     }
+
 
     @Override
     public String toString() {

@@ -22,7 +22,7 @@ public class Worker extends Thread{
             }
 
             if (controller.getGame().nextPlayerMove()) {
-                Platform.runLater(() -> controller.updateUI());
+                Platform.runLater(() -> controller.onGameFinished());
                 return;
             }
 

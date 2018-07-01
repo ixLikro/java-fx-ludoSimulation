@@ -2,6 +2,7 @@ package mainWindow;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.GridPane;
@@ -21,8 +22,7 @@ public class Controller {
     public static final int FIGURE_COUNT = 4;
 
     private List<View> allViews;
-    private Stage primaryStage;
-    private final Thread worker;
+    private Thread worker;
     private Thread timer;
 
     private boolean autoRunning;
@@ -36,12 +36,15 @@ public class Controller {
 
         game = new Game();
 
+        newWorker();
+    }
+
+    private void newWorker(){
         worker = new Worker(this);
     }
 
-    public void setup(Stage stage){
-        primaryStage = stage;
 
+    public void setup(Stage stage){
         //set up all views
         for (View v : allViews) {
             v.setupUI();
@@ -56,9 +59,27 @@ public class Controller {
         });
 
         right_button_start.setOnAction(event -> {
-            if(!timer.isInterrupted()){
+
+            if(!timer.isAlive()){
                 timer.start();
+                right_button_start.setText("Pause");
             }
+
+            //after the first click override it self to change behavior
+            right_button_start.setOnAction(event1 -> {
+                if(!worker.isAlive()){
+                    newGame();
+                }else {
+                    if(!timer.isAlive()){
+                        right_button_start.setText("Pause");
+                        timer = new Timer(worker, right_slider);
+                        timer.start();
+                    }else {
+                        right_button_start.setText("Fortsetzen");
+                        timer.interrupt();
+                    }
+                }
+            });
         });
 
         //update slider text
@@ -83,6 +104,31 @@ public class Controller {
         }
     }
 
+    public void onGameFinished(){
+        StatisticHelper.getInstance().newGame();
+
+        if(right_checkbox_autoRestart.isSelected()){
+            newGame();
+        }
+
+        right_button_start.setText("Neues Spiel starten");
+    }
+
+    public void newGame(){
+
+        game = new Game();
+        for (View v : allViews) {
+            v.resetUI();
+        }
+
+        newWorker();
+        worker.start();
+        timer = new Timer(worker, right_slider);
+        timer.start();
+
+        right_button_start.setText("Pause");
+    }
+
     public void resetALL(){
         for (View v : allViews) {
             v.resetUI();
@@ -103,5 +149,6 @@ public class Controller {
     @FXML public Button right_button_start;
     @FXML public Slider right_slider;
     @FXML public Label right_slider_label;
+    @FXML public CheckBox right_checkbox_autoRestart;
 
 }
