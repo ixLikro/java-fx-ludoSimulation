@@ -272,14 +272,7 @@ public class BoardView extends View {
         ret.setStroke(Color.BLACK);
         ret.setStrokeWidth(3d);
 
-        ret.setOnMouseEntered(event -> {
-            Tooltip tip = new Tooltip(StatisticHelper.getInstance().getSumStatistic()
-                    .getFieldStatistic(index).toString(true));
-            tip.setShowDelay(Duration.millis(50));
-            tip.setShowDuration(Duration.INDEFINITE);
-            tip.setFont(new Font(tip.getFont().getFamily(),14));
-            Tooltip.install(ret, tip);
-        });
+        new FieldTooltipWithUpdate(ret, index);
 
         return ret;
     }
@@ -291,14 +284,16 @@ public class BoardView extends View {
         ret.setStroke(color.getPaint());
         ret.setStrokeWidth(3d);
 
-        ret.setOnMouseEntered(event -> {
+        /*ret.setOnMouseEntered(event -> {
             Tooltip tip = new Tooltip(StatisticHelper.getInstance().getSumStatistic()
                     .getPlayerStatistic(color).toString(true));
             tip.setShowDelay(Duration.millis(50));
             tip.setShowDuration(Duration.INDEFINITE);
             tip.setFont(new Font(tip.getFont().getFamily(),14));
             Tooltip.install(ret, tip);
-        });
+        });*/
+
+        new PlayerTooltipWithUpdate(ret, color);
 
         return ret;
     }

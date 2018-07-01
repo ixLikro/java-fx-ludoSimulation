@@ -2,6 +2,7 @@ package mainWindow.statistic;
 
 import mainWindow.model.Board;
 import mainWindow.model.Color;
+import mainWindow.statistic.update.StatisticUpdateHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,8 @@ public class StatisticHelper {
     public void newGame(){
         calcSumStatistics();
         allStatistics.add(new GameStatistic());
+
+        StatisticUpdateHandler.getInstance().updateObserver();
     }
 
     public GameStatistic getCurrentGameStat(){
